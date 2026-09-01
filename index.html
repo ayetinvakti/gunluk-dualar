@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title data-i18n="page_title">Günlük Dualar | Ayetin Vakti</title>
+    <meta name="theme-color" content="#10b981">
+    
+    <script>
+        // Tema ve Dil Kontrolü (Sayfa yüklenmeden önce çalışır, titremeyi önler)
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        if (savedTheme === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+        }
+
+        const currentLang = localStorage.getItem('user_lang') || 'tr';
+        if (currentLang === 'ar') {
+            document.documentElement.setAttribute('dir', 'rtl');
+        } else {
+            document.documentElement.setAttribute('dir', 'ltr');
+        }
+    </script>
+
+    <style>
+        /* Gece Teması (Varsayılan Koyu Mode) */
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #10b981;
+            --accent-hover: #047857;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --btn-bg: rgba(255, 255, 255, 0.05);
+            --btn-hover: rgba(255, 255, 255, 0.1);
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* Gündüz Teması (Açık Mode) */
+        [data-theme="light"] {
+            --bg-color: #f1f5f9 !important;
+            --card-bg: #ffffff !important;
+            --accent-color: #059669 !important;
+            --accent-hover: #047857 !important;
+            --text-color: #0f172a !important;
+            --text-muted: #64748b !important;
+            --border-color: #cbd5e1 !important;
+            --btn-bg: #f8fafc !important;
+            --btn-hover: #e2e8f0 !important;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { font-family: var(--font-family); background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 16px; transition: background-color 0.3s ease, color 0.3s ease; }
+        .container { width: 100%; max-width: 650px; display: flex; flex-direction: column; gap: 16px; }
+        
+        .navbar { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; box-shadow: var(--shadow); transition: 0.3s; }
+        [dir="rtl"] .navbar { flex-direction: row-reverse; }
+
+        .circle-btn { width: 42px; height: 42px; border-radius: 50%; background: var(--btn-bg); border: 1px solid var(--border-color); color: var(--text-color); display: flex; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; font-size: 1.2rem; transition: 0.2s; }
+        .circle-btn:hover { border-color: var(--accent-color); color: var(--accent-color); background: var(--btn-hover); }
+        .app-title { font-size: 1.1rem; font-weight: 700; color: var(--accent-color); text-align: center; }
+
+        /* Kategori Filtre Butonları */
+        .categories-container { display: flex; gap: 6px; padding-bottom: 4px; overflow-x: auto; scrollbar-width: none; }
+        .categories-container::-webkit-scrollbar { display: none; }
+        .cat-btn { padding: 8px 14px; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-muted); font-weight: 600; font-size: 0.82rem; border-radius: 12px; cursor: pointer; transition: 0.2s; white-space: nowrap; box-shadow: var(--shadow); }
+        .cat-btn.active { background: var(--accent-color); color: #fff; border-color: var(--accent-color); }
+
+        /* Dua Kartı Stilleri */
+        .dualar-list { display: flex; flex-direction: column; gap: 14px; }
+        .dua-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow); transition: 0.3s; }
+        .dua-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .dua-name { font-size: 1.05rem; font-weight: 700; color: var(--accent-color); }
+        .dua-tag { font-size: 0.72rem; background: var(--btn-bg); border: 1px solid var(--border-color); padding: 3px 8px; border-radius: 20px; color: var(--text-muted); font-weight: 600; }
+        
+        .arabic-text { font-size: 1.3rem; font-family: 'Amiri', 'Traditional Arabic', serif; text-align: right; color: var(--text-color); line-height: 2; direction: rtl; }
+        .pronunciation-text { font-size: 0.88rem; color: var(--accent-color); font-weight: 600; background: var(--btn-bg); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border-color); line-height: 1.5; }
+        .translation-text { font-size: 0.86rem; color: var(--text-muted); font-style: italic; line-height: 1.5; }
+        .dua-virtue { font-size: 0.82rem; color: var(--text-color); background: var(--btn-bg); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--accent-color); }
+
+        .footer { margin: 20px 0; text-align: center; font-size: 0.85rem; color: var(--text-muted); }
+        .footer span { color: var(--accent-color); font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header class="navbar">
+        <a href="../" class="circle-btn" title="Geri Dön">←</a>
+        <div class="app-title" data-i18n="app_title">Günlük Dualar</div>
+        <button class="circle-btn" onclick="toggleTheme()" id="theme-btn" title="Tema Değiştir">☀️</button>
+    </header>
+
+    <!-- Kategori Filtreleri -->
+    <div class="categories-container" id="category-filters">
+        <button class="cat-btn active" onclick="filterCategory('hepsi', this)">Hepsi</button>
+        <button class="cat-btn" onclick="filterCategory('sabah-aksam', this)">Sabah & Akşam</button>
+        <button class="cat-btn" onclick="filterCategory('ev-yol', this)">Ev & Yolculuk</button>
+        <button class="cat-btn" onclick="filterCategory('yemek-rizik', this)">Yemek & Rızık</button>
+        <button class="cat-btn" onclick="filterCategory('sikinti', this)">Sıkıntı & Dua</button>
+    </div>
+
+    <!-- Dualar Listesi -->
+    <div class="dualar-list" id="dualar-container">
+        <!-- Dinamik olarak yüklenecek -->
+    </div>
+</div>
+
+<div class="footer">© Ayetin Vakti • <span data-i18n="footer_text">Huzur ve İbadet Rehberliğiniz</span></div>
+
+<script>
+    // Dil Sözlüğü Desteği
+    const translations = {
+        tr: {
+            page_title: "Günlük Dualar | Ayetin Vakti",
+            app_title: "Günlük Dualar",
+            footer_text: "Huzur ve İbadet Rehberliğiniz"
+        }
+    };
+
+    const activeLang = localStorage.getItem('user_lang') || 'tr';
+    const t = translations[activeLang] || translations['tr'];
+
+    // Dua Veritabanı
+    const dualarVeritabani = [
+        {
+            id: 1,
+            kategori: "sabah-aksam",
+            baslik: "Sabah-Akşam Okunacak İstiğfar (Seyyidül İstiğfar)",
+            tag: "Sabah & Akşam",
+            arapça: "اللّهُمَّ أَنْتَ رَبِّي لا إلهَ إلاّ أنتَ، خَلَقْتَني وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ ما اسْتَطَعْتُ...",
+            okunus: "Allâhümme ente Rabbî lâ ilâhe illâ ente, halaktenî ve ene abْدüke, ve ene alâ ahdike ve va'dike mestatât... Kim bunu günde inanarak okursa cennet ehlindendir.",
+            meal: "Allah'ım! Sen benim Rabbimsin. Senden başka ilah yoktur. Beni Sen yarattın; ben Senin kulunum...",
+            fazilet: "Gündüz inanarak bunu okuyan ve o gün akşam olmadan ölen cennet ehlindendir."
+        },
+        {
+            id: 2,
+            kategori: "sabah-aksam",
+            baslik: "Sabah ve Akşam Korunma Duası",
+            tag: "Sabah & Akşam",
+            arapça: "بِسْمِ اللَّهِ الَّذِي لاَ يَضُرُّ مع اسمِهِ شَيْءٌ في الأرضِ ولا في السماءِ وهو السميعُ العليمُ",
+            okunus: "Bismillâhillezî lâ yedurru ma'asmihî şey'ün fil-ardı ve lâ fis-semâi ve hüves-semî'ul-alîm.",
+            meal: "İsmi anıldığında gökte ve yerde hiçbir şeyin zarar veremediği Allah'ın adıyla baslarım. O, her şeyi işiten ve bilendir.",
+            fazilet: "Sabah üç defa okuyan akşama kadar, akşam üç defa okuyan sabaha kadar hiçbir kaza ve bela ile karşılaşmaz."
+        },
+        {
+            id: 3,
+            kategori: "ev-yol",
+            baslik: "Evden Çıkış Duası",
+            tag: "Ev & Yolculuk",
+            arapça: "بِسْمِ اللَّهِ، تَوَكَّلْتُ عَلَى اللَّهِ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ",
+            okunus: "Bismillâh, tevekkeltü alâllâh, ve lâ havle ve lâ kuvvete illâ billâh.",
+            meal: "Allah'ın adıyla, Allah'a tevekkül ettim. Güç ve kuvvet ancak Allah'ın yardımıyla mümkündür.",
+            fazilet: "Evden çıkarken bu duayı okuyana melekler 'Doğru yola iletildin, korundun ve kifayet edildin' derler."
+        },
+        {
+            id: 4,
+            kategori: "ev-yol",
+            baslik: "Eve Giriş Duası",
+            tag: "Ev & Yolculuk",
+            arapça: "اللَّهُمَّ إِنِّى أَسْأَلuk خَيْرَ المَوْلِجِ وَخَيْرَ المَخْرَجِ، بِسْمِ اللَّهِ وَلَجْنَا...",
+            okunus: "Allâhümme innî es'elüke hayral-mévlici ve hayral-mahric, bismillâhi velednâ ve alâ rabbinâ tevekkelnâ.",
+            meal: "Allah'ım! Senden girilecek yerin de çıkılacak yerin de hayrını isteriz...",
+            fazilet: "Eve girerken Allah'ın adı anılır ve selam verilir; şeytan o eve giremez."
+        },
+        {
+            id: 5,
+            kategori: "yemek-rizik",
+            baslik: "Yemek Sonrası Duası",
+            tag: "Yemek & Rızık",
+            arapça: "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنِي هَذَا وَرَزَقَنِيهِ مِنْ غَيْرِ حَوْلٍ مِنِّي وَلَا قُوَّةٍ",
+            okunus: "Elhamdülillâhillezî et'amenî hâzâ ve rezekanîhi min gayri havlin minnî ve lâ kuvveh.",
+            meal: "Bana bunu yediren ve benden hiçbir güç ve kuvvet gelmeden bunu bana rızık kılan Allah'a hamdolsun.",
+            fazilet: "Bu duayı edenin geçmiş günahları bağışlanır."
+        },
+        {
+            id: 6,
+            kategori: "sikinti",
+            baslik: "Sıkıntı ve Keder Anında Okunacak Dua",
+            tag: "Sıkıntı & Dua",
+            arapça: "لَا إِلَهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ",
+            okunus: "Lâ ilâhe illâ ente sübhaneke innî küntü minez-zâlimin.",
+            meal: "Senden başka ilah yoktur, Sen’i tenzih ederim. Şüphesiz ben zalimlerden oldum.",
+            fazilet: "Hz. Yunus'un balığın karnındayken ettiği bu dua, sıkıntıda olanların kurtuluş vesilesidir."
+        }
+    ];
+
+    function renderDualar(kategori) {
+        const container = document.getElementById('dualar-container');
+        let html = '';
+
+        const filtrelenmis = kategori === 'hepsi' 
+            ? dualarVeritabani 
+            : dualarVeritabani.filter(d => d.kategori === kategori);
+
+        filtrelenmis.forEach(dua => {
+            html += `
+                <div class="dua-card">
+                    <div class="dua-header">
+                        <div class="dua-name">${dua.baslik}</div>
+                        <div class="dua-tag">${dua.tag}</div>
+                    </div>
+                    <div class="arabic-text">${dua.arapça}</div>
+                    <div class="pronunciation-text">🔊 Okunuşu: ${dua.okunus}</div>
+                    <div class="translation-text"><strong>Anlamı:</strong> ${dua.meal}</div>
+                    <div class="dua-virtue">✨ <strong>Fazileti / Not:</strong> ${dua.fazilet}</div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+    }
+
+    function filterCategory(kategori, btn) {
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderDualar(kategori);
+    }
+
+    // --- TEMA YÖNETİMİ ---
+    function initTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        applyTheme(savedTheme);
+    }
+
+    function toggleTheme() {
+        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+        const newTheme = isLight ? 'dark' : 'light';
+        applyTheme(newTheme);
+    }
+
+    function applyTheme(theme) {
+        const btn = document.getElementById('theme-btn');
+        if (theme === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+            if (btn) btn.innerHTML = '🌙'; 
+            localStorage.setItem('theme', 'light');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+            if (btn) btn.innerHTML = '☀️'; 
+            localStorage.setItem('theme', 'dark');
+        }
+    }
+
+    // Başlangıç Çalıştırması
+    window.onload = () => {
+        initTheme();
+        renderDualar('hepsi');
+
+        // Dil etiketlerini yerleştir
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (t[key]) {
+                if (el.tagName === 'TITLE') document.title = t[key];
+                else el.innerHTML = t[key];
+            }
+        });
+    };
+</script>
+</body>
+</html>
