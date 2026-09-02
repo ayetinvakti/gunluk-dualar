@@ -11,8 +11,9 @@
     
     <script>
         // Tema ve Dil Kontrolü (Sayfa yüklenmeden önce çalışır, titremeyi önler)
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        if (savedTheme === 'light') {
+        const savedTheme = localStorage.getItem('theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (savedTheme === 'light' || (!savedTheme && !systemPrefersDark)) {
             document.documentElement.setAttribute('data-theme', 'light');
         } else {
             document.documentElement.removeAttribute('data-theme');
@@ -226,19 +227,20 @@
 
     // --- TEMA YÖNETİMİ ---
     function initTheme() {
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        applyTheme(savedTheme);
+        const savedTheme = localStorage.getItem('theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const isLight = (savedTheme === 'light') || (!savedTheme && !systemPrefersDark);
+        applyTheme(isLight);
     }
 
     function toggleTheme() {
         const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-        const newTheme = isLight ? 'dark' : 'light';
-        applyTheme(newTheme);
+        applyTheme(!isLight);
     }
 
-    function applyTheme(theme) {
+    function applyTheme(isLight) {
         const btn = document.getElementById('theme-btn');
-        if (theme === 'light') {
+        if (isLight) {
             document.documentElement.setAttribute('data-theme', 'light');
             if (btn) btn.innerHTML = '🌙'; 
             localStorage.setItem('theme', 'light');
