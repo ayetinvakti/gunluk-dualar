@@ -10,21 +10,23 @@
     <meta name="theme-color" content="#10b981">
     
     <script>
-        // Tema ve Dil Kontrolü (Sayfa yüklenmeden önce çalışır, titremeyi önler)
-        const savedTheme = localStorage.getItem('theme');
-        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (savedTheme === 'light' || (!savedTheme && !systemPrefersDark)) {
-            document.documentElement.setAttribute('data-theme', 'light');
-        } else {
-            document.documentElement.removeAttribute('data-theme');
-        }
+        // Sayfa yüklenmeden önce temayı anında uygula (titremeyi önler)
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (savedTheme === 'light' || (!savedTheme && !systemPrefersDark)) {
+                document.documentElement.setAttribute('data-theme', 'light');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+            }
 
-        const currentLang = localStorage.getItem('user_lang') || 'tr';
-        if (currentLang === 'ar') {
-            document.documentElement.setAttribute('dir', 'rtl');
-        } else {
-            document.documentElement.setAttribute('dir', 'ltr');
-        }
+            const currentLang = localStorage.getItem('user_lang') || 'tr';
+            if (currentLang === 'ar') {
+                document.documentElement.setAttribute('dir', 'rtl');
+            } else {
+                document.documentElement.setAttribute('dir', 'ltr');
+            }
+        })();
     </script>
 
     <style>
@@ -137,7 +139,7 @@
             baslik: "Sabah-Akşam Okunacak İstiğfar (Seyyidül İstiğfar)",
             tag: "Sabah & Akşam",
             arapça: "اللّهُمَّ أَنْتَ رَبِّي لا إلهَ إلاّ أنتَ، خَلَقْتَني وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ ما اسْتَطَعْتُ...",
-            okunus: "Allâhümme ente Rabbî lâ ilâhe illâ ente, halaktenî ve ene abْدüke, ve ene alâ ahdike ve va'dike mestatât... Kim bunu günde inanarak okursa cennet ehlindendir.",
+            okunus: "Allâhümme ente Rabbî lâ ilâhe illâ ente, halaktenî ve ene abdüke, ve ene alâ ahdike ve va'dike mestatât... Kim bunu günde inanarak okursa cennet ehlindendir.",
             meal: "Allah'ım! Sen benim Rabbimsin. Senden başka ilah yoktur. Beni Sen yarattın; ben Senin kulunum...",
             fazilet: "Gündüz inanarak bunu okuyan ve o gün akşam olmadan ölen cennet ehlindendir."
         },
@@ -148,7 +150,7 @@
             tag: "Sabah & Akşam",
             arapça: "بِسْمِ اللَّهِ الَّذِي لاَ يَضُرُّ مع اسمِهِ شَيْءٌ في الأرضِ ولا في السماءِ وهو السميعُ العليمُ",
             okunus: "Bismillâhillezî lâ yedurru ma'asmihî şey'ün fil-ardı ve lâ fis-semâi ve hüves-semî'ul-alîm.",
-            meal: "İsmi anıldığında gökte ve yerde hiçbir şeyin zarar veremediği Allah'ın adıyla baslarım. O, her şeyi işiten ve bilendir.",
+            meal: "İsmi anıldığında gökte ve yerde hiçbir şeyin zarar veremediği Allah'ın adıyla başlarım. O, her şeyi işiten ve bilendir.",
             fazilet: "Sabah üç defa okuyan akşama kadar, akşam üç defa okuyan sabaha kadar hiçbir kaza ve bela ile karşılaşmaz."
         },
         {
@@ -166,8 +168,8 @@
             kategori: "ev-yol",
             baslik: "Eve Giriş Duası",
             tag: "Ev & Yolculuk",
-            arapça: "اللَّهُمَّ إِنِّى أَسْأَلuk خَيْرَ المَوْلِجِ وَخَيْرَ المَخْرَجِ، بِسْمِ اللَّهِ وَلَجْنَا...",
-            okunus: "Allâhümme innî es'elüke hayral-mévlici ve hayral-mahric, bismillâhi velednâ ve alâ rabbinâ tevekkelnâ.",
+            arapça: "اللَّهُمَّ إِنِّى أَسْأَلُكَ خَيْرَ المَوْلِجِ وَخَيْرَ المَخْرَجِ، بِسْمِ اللَّهِ وَلَجْنَا...",
+            okunus: "Allâhümme innî es'elüke hayral-mevlici ve hayral-mahric, bismillâhi velednâ ve alâ rabbinâ tevekkelnâ.",
             meal: "Allah'ım! Senden girilecek yerin de çıkılacak yerin de hayrını isteriz...",
             fazilet: "Eve girerken Allah'ın adı anılır ve selam verilir; şeytan o eve giremez."
         },
@@ -226,38 +228,28 @@
     }
 
     // --- TEMA YÖNETİMİ ---
-    function updateThemeButton(isLight) {
+    function updateThemeButton() {
         const btn = document.getElementById('theme-btn');
-        if (btn) btn.innerHTML = isLight ? '🌙' : '☀️';
-    }
-
-    function initTheme() {
-        const savedTheme = localStorage.getItem('theme');
-        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const isLight = (savedTheme === 'light') || (!savedTheme && !systemPrefersDark);
-        applyTheme(isLight);
+        if (!btn) return;
+        const isLight = document.documentElement.hasAttribute('data-theme');
+        btn.innerHTML = isLight ? '🌙' : '☀️';
     }
 
     function toggleTheme() {
         const isLight = document.documentElement.hasAttribute('data-theme');
-        applyTheme(!isLight);
-    }
-
-    function applyTheme(isLight) {
         if (isLight) {
-            document.documentElement.setAttribute('data-theme', 'light');
-            localStorage.setItem('theme', 'light');
-            updateThemeButton(true);
-        } else {
             document.documentElement.removeAttribute('data-theme');
             localStorage.setItem('theme', 'dark');
-            updateThemeButton(false);
+        } else {
+            document.documentElement.setAttribute('data-theme', 'light');
+            localStorage.setItem('theme', 'light');
         }
+        updateThemeButton();
     }
 
-    // Başlangıç Çalıştırması
-    window.onload = () => {
-        initTheme();
+    // Sayfa Yüklendiğinde Çalışacaklar
+    document.addEventListener('DOMContentLoaded', () => {
+        updateThemeButton();
         renderDualar('hepsi');
 
         // Dil etiketlerini yerleştir
@@ -268,7 +260,7 @@
                 else el.innerHTML = t[key];
             }
         });
-    };
+    });
 </script>
 </body>
 </html>
