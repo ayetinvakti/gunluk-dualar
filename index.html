@@ -10,23 +10,31 @@
     <meta name="theme-color" content="#10b981">
     
     <script>
-        // Sayfa yüklenmeden önce temayı anında uygula (titremeyi önler)
-        (function() {
-            const savedTheme = localStorage.getItem('theme');
-            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            if (savedTheme === 'light' || (!savedTheme && !systemPrefersDark)) {
-                document.documentElement.setAttribute('data-theme', 'light');
-            } else {
-                document.documentElement.removeAttribute('data-theme');
-            }
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        if (savedTheme === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+        }
 
-            const currentLang = localStorage.getItem('user_lang') || 'tr';
-            if (currentLang === 'ar') {
-                document.documentElement.setAttribute('dir', 'rtl');
-            } else {
-                document.documentElement.setAttribute('dir', 'ltr');
-            }
-        })();
+        const savedAccent = localStorage.getItem('custom_accent');
+        const savedText = localStorage.getItem('custom_text');
+
+        if (savedAccent) document.documentElement.style.setProperty('--accent-color', savedAccent);
+        if (savedText) document.documentElement.style.setProperty('--text-color', savedText);
+
+        const savedBg = localStorage.getItem('custom_bg');
+        if (savedBg && savedTheme !== 'light') {
+            document.documentElement.style.setProperty('--bg-color', savedBg);
+            document.documentElement.style.setProperty('--card-bg', savedBg);
+        }
+
+        const currentLang = localStorage.getItem('user_lang') || 'tr';
+        if (currentLang === 'ar') {
+            document.documentElement.setAttribute('dir', 'rtl');
+        } else {
+            document.documentElement.setAttribute('dir', 'ltr');
+        }
     </script>
 
     <style>
@@ -190,7 +198,7 @@
             tag: "Sıkıntı & Dua",
             arapça: "لَا إِلَهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ",
             okunus: "Lâ ilâhe illâ ente sübhaneke innî küntü minez-zâlimin.",
-            meal: "Senden başka ilah yoktur, Sen’i tenzih ederim. Şüphesiz ben zalimlerden oldum.",
+            meal: "Senden başka ilah yoktur, Sen’i tenzih ederim. Şüphesiz ben zalimlerden oldوم.",
             fazilet: "Hz. Yunus'un balığın karnındayken ettiği bu dua, sıkıntıda olanların kurtuluş vesilesidir."
         }
     ];
@@ -227,29 +235,34 @@
         renderDualar(kategori);
     }
 
-    // --- TEMA YÖNETİMİ ---
-    function updateThemeButton() {
-        const btn = document.getElementById('theme-btn');
-        if (!btn) return;
-        const isLight = document.documentElement.hasAttribute('data-theme');
-        btn.innerHTML = isLight ? '🌙' : '☀️';
+    // --- TEMA YÖNETİMİ (Çalışan standart yapıya uyarlandı) ---
+    function initTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        applyTheme(savedTheme);
     }
 
     function toggleTheme() {
-        const isLight = document.documentElement.hasAttribute('data-theme');
-        if (isLight) {
-            document.documentElement.removeAttribute('data-theme');
-            localStorage.setItem('theme', 'dark');
-        } else {
+        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+        const newTheme = isLight ? 'dark' : 'light';
+        applyTheme(newTheme);
+    }
+
+    function applyTheme(theme) {
+        const btn = document.getElementById('theme-btn');
+        if (theme === 'light') {
             document.documentElement.setAttribute('data-theme', 'light');
+            if (btn) btn.innerHTML = '🌙'; 
             localStorage.setItem('theme', 'light');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+            if (btn) btn.innerHTML = '☀️'; 
+            localStorage.setItem('theme', 'dark');
         }
-        updateThemeButton();
     }
 
     // Sayfa Yüklendiğinde Çalışacaklar
-    document.addEventListener('DOMContentLoaded', () => {
-        updateThemeButton();
+    window.onload = () => {
+        initTheme();
         renderDualar('hepsi');
 
         // Dil etiketlerini yerleştir
@@ -260,7 +273,7 @@
                 else el.innerHTML = t[key];
             }
         });
-    });
+    };
 </script>
 </body>
 </html>
