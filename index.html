@@ -138,7 +138,7 @@
             tag: "Sabah & Akşam",
             arapça: "اللّهُمَّ أَنْتَ رَبِّي لا إلهَ إلاّ أنتَ، خَلَقْتَني وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ ما اسْتَطَعْتُ...",
             okunus: "Allâhümme ente Rabbî lâ ilâhe illâ ente, halaktenî ve ene abْدüke, ve ene alâ ahdike ve va'dike mestatât... Kim bunu günde inanarak okursa cennet ehlindendir.",
-            meal: "Allah'ım! Sen benim Rabbimsin. Senden başka ilah yoktur. Beni Sen yarattın; ben Senin kulunum...",
+            meal: "Allah'ım! Sen Senin Rabbimsin. Senden başka ilah yoktur. Beni Sen yarattın; ben Senin kulunum...",
             fazilet: "Gündüz inanarak bunu okuyan ve o gün akşam olmadan ölen cennet ehlindendir."
         },
         {
@@ -226,6 +226,11 @@
     }
 
     // --- TEMA YÖNETİMİ ---
+    function updateThemeButton(isLight) {
+        const btn = document.getElementById('theme-btn');
+        if (btn) btn.innerHTML = isLight ? '🌙' : '☀️';
+    }
+
     function initTheme() {
         const savedTheme = localStorage.getItem('theme');
         const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -234,20 +239,19 @@
     }
 
     function toggleTheme() {
-        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+        const isLight = document.documentElement.hasAttribute('data-theme');
         applyTheme(!isLight);
     }
 
     function applyTheme(isLight) {
-        const btn = document.getElementById('theme-btn');
         if (isLight) {
             document.documentElement.setAttribute('data-theme', 'light');
-            if (btn) btn.innerHTML = '🌙'; 
             localStorage.setItem('theme', 'light');
+            updateThemeButton(true);
         } else {
             document.documentElement.removeAttribute('data-theme');
-            if (btn) btn.innerHTML = '☀️'; 
             localStorage.setItem('theme', 'dark');
+            updateThemeButton(false);
         }
     }
 
