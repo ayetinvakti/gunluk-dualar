@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title data-i18n="page_title">Günlük Dualar | Ayetin Vakti</title>
     <meta name="theme-color" content="#10b981">
-    
+
     <script>
         const savedTheme = localStorage.getItem('theme') || 'dark';
         if (savedTheme === 'light') {
@@ -35,10 +35,10 @@
         } else {
             document.documentElement.setAttribute('dir', 'ltr');
         }
+        document.documentElement.setAttribute('lang', currentLang);
     </script>
 
     <style>
-        /* Gece Teması (Varsayılan Koyu Mode) */
         :root {
             --bg-color: #0f172a;
             --card-bg: #1e293b;
@@ -53,7 +53,6 @@
             --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
-        /* Gündüz Teması (Açık Mode) */
         [data-theme="light"] {
             --bg-color: #f1f5f9 !important;
             --card-bg: #ffffff !important;
@@ -70,7 +69,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         body { font-family: var(--font-family); background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 16px; transition: background-color 0.3s ease, color 0.3s ease; }
         .container { width: 100%; max-width: 650px; display: flex; flex-direction: column; gap: 16px; }
-        
+
         .navbar { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; box-shadow: var(--shadow); transition: 0.3s; }
         [dir="rtl"] .navbar { flex-direction: row-reverse; }
 
@@ -78,23 +77,32 @@
         .circle-btn:hover { border-color: var(--accent-color); color: var(--accent-color); background: var(--btn-hover); }
         .app-title { font-size: 1.1rem; font-weight: 700; color: var(--accent-color); text-align: center; }
 
-        /* Kategori Filtre Butonları */
+        .search-box { width: 100%; padding: 12px 16px; border-radius: 14px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color); font-size: 0.92rem; outline: none; box-shadow: var(--shadow); transition: 0.2s; }
+        .search-box:focus { border-color: var(--accent-color); }
+        .search-box::placeholder { color: var(--text-muted); }
+
         .categories-container { display: flex; gap: 6px; padding-bottom: 4px; overflow-x: auto; scrollbar-width: none; }
         .categories-container::-webkit-scrollbar { display: none; }
         .cat-btn { padding: 8px 14px; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-muted); font-weight: 600; font-size: 0.82rem; border-radius: 12px; cursor: pointer; transition: 0.2s; white-space: nowrap; box-shadow: var(--shadow); }
         .cat-btn.active { background: var(--accent-color); color: #fff; border-color: var(--accent-color); }
 
-        /* Dua Kartı Stilleri */
         .dualar-list { display: flex; flex-direction: column; gap: 14px; }
         .dua-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow); transition: 0.3s; }
-        .dua-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
-        .dua-name { font-size: 1.05rem; font-weight: 700; color: var(--accent-color); }
-        .dua-tag { font-size: 0.72rem; background: var(--btn-bg); border: 1px solid var(--border-color); padding: 3px 8px; border-radius: 20px; color: var(--text-muted); font-weight: 600; }
-        
-        .arabic-text { font-size: 1.3rem; font-family: 'Amiri', 'Traditional Arabic', serif; text-align: right; color: var(--text-color); line-height: 2; direction: rtl; }
-        .pronunciation-text { font-size: 0.88rem; color: var(--accent-color); font-weight: 600; background: var(--btn-bg); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border-color); line-height: 1.5; }
-        .translation-text { font-size: 0.86rem; color: var(--text-muted); font-style: italic; line-height: 1.5; }
-        .dua-virtue { font-size: 0.82rem; color: var(--text-color); background: var(--btn-bg); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--accent-color); }
+        .dua-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .dua-name { font-size: 1.05rem; font-weight: 700; color: var(--accent-color); line-height: 1.35; }
+        .dua-tag { font-size: 0.72rem; background: var(--btn-bg); border: 1px solid var(--border-color); padding: 3px 8px; border-radius: 20px; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+
+        .arabic-text { font-size: 1.4rem; font-family: 'Amiri', 'Traditional Arabic', 'Noto Naskh Arabic', serif; text-align: right; color: var(--text-color); line-height: 2.1; direction: rtl; }
+        .pronunciation-text { font-size: 0.88rem; color: var(--accent-color); font-weight: 600; background: var(--btn-bg); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border-color); line-height: 1.6; }
+        .translation-text { font-size: 0.86rem; color: var(--text-muted); font-style: italic; line-height: 1.6; }
+        .dua-virtue { font-size: 0.82rem; color: var(--text-color); background: var(--btn-bg); padding: 8px 12px; border-radius: 8px; border-inline-start: 3px solid var(--accent-color); line-height: 1.5; }
+
+        .dua-actions { display: flex; justify-content: flex-end; }
+        .copy-btn { padding: 7px 14px; background: var(--btn-bg); border: 1px solid var(--border-color); color: var(--text-color); font-size: 0.8rem; font-weight: 600; border-radius: 10px; cursor: pointer; transition: 0.2s; }
+        .copy-btn:hover { border-color: var(--accent-color); color: var(--accent-color); }
+
+        .empty-msg { text-align: center; color: var(--text-muted); padding: 30px 10px; font-size: 0.9rem; }
+        .source-note { text-align: center; font-size: 0.75rem; color: var(--text-muted); line-height: 1.5; padding: 0 8px; }
 
         .footer { margin: 20px 0; text-align: center; font-size: 0.85rem; color: var(--text-muted); }
         .footer span { color: var(--accent-color); font-weight: 600; }
@@ -109,133 +117,283 @@
         <button class="circle-btn" onclick="toggleTheme()" id="theme-btn" title="Tema Değiştir">☀️</button>
     </header>
 
-    <!-- Kategori Filtreleri -->
-    <div class="categories-container" id="category-filters">
-        <button class="cat-btn active" onclick="filterCategory('hepsi', this)">Hepsi</button>
-        <button class="cat-btn" onclick="filterCategory('sabah-aksam', this)">Sabah & Akşam</button>
-        <button class="cat-btn" onclick="filterCategory('ev-yol', this)">Ev & Yolculuk</button>
-        <button class="cat-btn" onclick="filterCategory('yemek-rizik', this)">Yemek & Rızık</button>
-        <button class="cat-btn" onclick="filterCategory('sikinti', this)">Sıkıntı & Dua</button>
-    </div>
+    <input type="search" class="search-box" id="search-input" data-i18n-placeholder="search_ph" placeholder="Dua ara..." oninput="renderDualar()">
 
-    <!-- Dualar Listesi -->
-    <div class="dualar-list" id="dualar-container">
-        <!-- Dinamik olarak yüklenecek -->
-    </div>
+    <div class="categories-container" id="category-filters"></div>
+
+    <div class="dualar-list" id="dualar-container"></div>
+
+    <div class="source-note" data-i18n="source_note">Dualar hadis-i şerif ve ayet-i kerimelerden derlenmiştir; fazilet bilgileri özet olarak verilmiştir.</div>
 </div>
 
 <div class="footer">© Ayetin Vakti • <span data-i18n="footer_text">Huzur ve İbadet Rehberliğiniz</span></div>
 
 <script>
-    // Dil Sözlüğü Desteği
+    // Arayüz dil sözlüğü (dua içerikleri Türkçedir, Arapça metin her dilde gösterilir)
     const translations = {
         tr: {
             page_title: "Günlük Dualar | Ayetin Vakti",
             app_title: "Günlük Dualar",
-            footer_text: "Huzur ve İbadet Rehberliğiniz"
+            footer_text: "Huzur ve İbadet Rehberliğiniz",
+            search_ph: "Dua ara...",
+            source_note: "Dualar hadis-i şerif ve ayet-i kerimelerden derlenmiştir; fazilet bilgileri özet olarak verilmiştir.",
+            cat_hepsi: "Hepsi",
+            cat_sabah: "Sabah & Akşam",
+            cat_evyol: "Ev & Yolculuk",
+            cat_yemek: "Yemek & Rızık",
+            cat_sikinti: "Sıkıntı & Dua",
+            cat_uyku: "Uyku & Uyanış",
+            pron: "Okunuşu",
+            meaning: "Anlamı",
+            virtue: "Fazileti / Not",
+            copy: "Kopyala",
+            copied: "Kopyalandı ✓",
+            empty: "Aramanıza uygun dua bulunamadı."
+        },
+        en: {
+            page_title: "Daily Prayers | Ayetin Vakti",
+            app_title: "Daily Prayers",
+            footer_text: "Your Guide to Peace and Worship",
+            search_ph: "Search prayers...",
+            source_note: "Prayers are compiled from hadith and Qur'anic verses; virtues are given in summary (Turkish).",
+            cat_hepsi: "All",
+            cat_sabah: "Morning & Evening",
+            cat_evyol: "Home & Travel",
+            cat_yemek: "Food & Provision",
+            cat_sikinti: "Hardship & Dua",
+            cat_uyku: "Sleep & Waking",
+            pron: "Pronunciation",
+            meaning: "Meaning",
+            virtue: "Virtue / Note",
+            copy: "Copy",
+            copied: "Copied ✓",
+            empty: "No prayer matches your search."
+        },
+        ar: {
+            page_title: "الأدعية اليومية | وقت الآية",
+            app_title: "الأدعية اليومية",
+            footer_text: "دليلك للسكينة والعبادة",
+            search_ph: "ابحث عن دعاء...",
+            source_note: "الأدعية مأخوذة من الأحاديث الشريفة والآيات الكريمة؛ الفضائل مذكورة بإيجاز (بالتركية).",
+            cat_hepsi: "الكل",
+            cat_sabah: "الصباح والمساء",
+            cat_evyol: "البيت والسفر",
+            cat_yemek: "الطعام والرزق",
+            cat_sikinti: "الشدائد والدعاء",
+            cat_uyku: "النوم والاستيقاظ",
+            pron: "النطق",
+            meaning: "المعنى",
+            virtue: "الفضل / ملاحظة",
+            copy: "نسخ",
+            copied: "تم النسخ ✓",
+            empty: "لا يوجد دعاء مطابق لبحثك."
         }
     };
 
     const activeLang = localStorage.getItem('user_lang') || 'tr';
     const t = translations[activeLang] || translations['tr'];
 
+    const kategoriler = [
+        { id: 'hepsi', key: 'cat_hepsi' },
+        { id: 'sabah-aksam', key: 'cat_sabah' },
+        { id: 'uyku', key: 'cat_uyku' },
+        { id: 'ev-yol', key: 'cat_evyol' },
+        { id: 'yemek-rizik', key: 'cat_yemek' },
+        { id: 'sikinti', key: 'cat_sikinti' }
+    ];
+    const kategoriKey = Object.fromEntries(kategoriler.map(k => [k.id, k.key]));
+    let aktifKategori = 'hepsi';
+
     // Dua Veritabanı
     const dualarVeritabani = [
         {
             id: 1,
             kategori: "sabah-aksam",
-            baslik: "Sabah-Akşam Okunacak İstiğfar (Seyyidül İstiğfar)",
-            tag: "Sabah & Akşam",
-            arapça: "اللّهُمَّ أَنْتَ رَبِّي لا إلهَ إلاّ أنتَ، خَلَقْتَني وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ ما اسْتَطَعْتُ...",
-            okunus: "Allâhümme ente Rabbî lâ ilâhe illâ ente, halaktenî ve ene abdüke, ve ene alâ ahdike ve va'dike mestatât... Kim bunu günde inanarak okursa cennet ehlindendir.",
-            meal: "Allah'ım! Sen benim Rabbimsin. Senden başka ilah yoktur. Beni Sen yarattın; ben Senin kulunum...",
-            fazilet: "Gündüz inanarak bunu okuyan ve o gün akşam olmadan ölen cennet ehlindendir."
+            baslik: "Seyyidül İstiğfar",
+            arapca: "اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ خَلَقْتَنِي وَأَنَا عَبْدُكَ وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ",
+            okunus: "Allâhümme ente Rabbî, lâ ilâhe illâ ente, halaktenî ve ene abdüke, ve ene alâ ahdike ve va'dike mestetâ'tü. Eûzü bike min şerri mâ sana'tü, ebûü leke bi-ni'metike aleyye ve ebûü bi-zenbî fağfir lî fe-innehû lâ yağfirüz-zünûbe illâ ente.",
+            meal: "Allah'ım! Sen benim Rabbimsin. Senden başka ilah yoktur. Beni sen yarattın, ben de senin kulunum. Gücüm yettiğince sana verdiğim söz ve ahid üzereyim. Yaptıklarımın şerrinden sana sığınırım. Bana verdiğin nimeti itiraf ediyor, günahımı da itiraf ediyorum. Beni bağışla; çünkü günahları senden başka bağışlayacak yoktur.",
+            fazilet: "Bu duayı gündüz inanarak okuyan ve akşam olmadan vefat eden cennetliktir; geceleyin okuyan ve sabah olmadan vefat eden de aynı şekildedir. (Buhârî)"
         },
         {
             id: 2,
             kategori: "sabah-aksam",
             baslik: "Sabah ve Akşam Korunma Duası",
-            tag: "Sabah & Akşam",
-            arapça: "بِسْمِ اللَّهِ الَّذِي لاَ يَضُرُّ مع اسمِهِ شَيْءٌ في الأرضِ ولا في السماءِ وهو السميعُ العليمُ",
-            okunus: "Bismillâhillezî lâ yedurru ma'asmihî şey'ün fil-ardı ve lâ fis-semâi ve hüves-semî'ul-alîm.",
-            meal: "İsmi anıldığında gökte ve yerde hiçbir şeyin zarar veremediği Allah'ın adıyla başlarım. O, her şeyi işiten ve bilendir.",
-            fazilet: "Sabah üç defa okuyan akşama kadar, akşam üç defa okuyan sabaha kadar hiçbir kaza ve bela ile karşılaşmaz."
+            arapca: "بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ",
+            okunus: "Bismillâhillezî lâ yedurru me'asmihî şey'un fîl-ardı ve lâ fîs-semâi ve hüves-semî'ul-alîm.",
+            meal: "İsmi anıldığında yerde ve gökte hiçbir şeyin zarar veremediği Allah'ın adıyla. O, her şeyi işiten ve bilendir.",
+            fazilet: "Sabah ve akşam üç defa okuyana hiçbir şeyin zarar vermeyeceği bildirilmiştir. (Ebû Dâvûd, Tirmizî)"
         },
         {
             id: 3,
-            kategori: "ev-yol",
-            baslik: "Evden Çıkış Duası",
-            tag: "Ev & Yolculuk",
-            arapça: "بِسْمِ اللَّهِ، تَوَكَّلْتُ عَلَى اللَّهِ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ",
-            okunus: "Bismillâh, tevekkeltü alâllâh, ve lâ havle ve lâ kuvvete illâ billâh.",
-            meal: "Allah'ın adıyla, Allah'a tevekkül ettim. Güç ve kuvvet ancak Allah'ın yardımıyla mümkündür.",
-            fazilet: "Evden çıkarken bu duayı okuyana melekler 'Doğru yola iletildin, korundun ve kifayet edildin' derler."
+            kategori: "uyku",
+            baslik: "Uyumadan Önce Okunacak Dua",
+            arapca: "اللَّهُمَّ بِاسْمِكَ أَمُوتُ وَأَحْيَا",
+            okunus: "Allâhümme bismike emûtü ve ahyâ.",
+            meal: "Allah'ım! Senin adınla ölür (uyur), senin adınla dirilirim (uyanırım).",
+            fazilet: "Peygamber Efendimiz (s.a.s.) yatağına girdiği zaman bu duayı okurdu. (Buhârî)"
         },
         {
             id: 4,
-            kategori: "ev-yol",
-            baslik: "Eve Giriş Duası",
-            tag: "Ev & Yolculuk",
-            arapça: "اللَّهُمَّ إِنِّى أَسْأَلُكَ خَيْرَ المَوْلِجِ وَخَيْرَ المَخْرَجِ، بِسْمِ اللَّهِ وَلَجْنَا...",
-            okunus: "Allâhümme innî es'elüke hayral-mevlici ve hayral-mahric, bismillâhi velednâ ve alâ rabbinâ tevekkelnâ.",
-            meal: "Allah'ım! Senden girilecek yerin de çıkılacak yerin de hayrını isteriz...",
-            fazilet: "Eve girerken Allah'ın adı anılır ve selam verilir; şeytan o eve giremez."
+            kategori: "uyku",
+            baslik: "Uyandıktan Sonra Okunacak Dua",
+            arapca: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ",
+            okunus: "Elhamdülillâhillezî ahyânâ ba'de mâ emâtenâ ve ileyhin-nüşûr.",
+            meal: "Bizi öldürdükten (uyuttuktan) sonra dirilten Allah'a hamdolsun. Dönüş ancak O'nadır.",
+            fazilet: "Peygamber Efendimiz (s.a.s.) uykudan uyandığında bu duayı okurdu. (Buhârî)"
         },
         {
             id: 5,
-            kategori: "yemek-rizik",
-            baslik: "Yemek Sonrası Duası",
-            tag: "Yemek & Rızık",
-            arapça: "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنِي هَذَا وَرَزَقَنِيهِ مِنْ غَيْرِ حَوْلٍ مِنِّي وَلَا قُوَّةٍ",
-            okunus: "Elhamdülillâhillezî et'amenî hâzâ ve rezekanîhi min gayri havlin minnî ve lâ kuvveh.",
-            meal: "Bana bunu yediren ve benden hiçbir güç ve kuvvet gelmeden bunu bana rızık kılan Allah'a hamdolsun.",
-            fazilet: "Bu duayı edenin geçmiş günahları bağışlanır."
+            kategori: "ev-yol",
+            baslik: "Evden Çıkış Duası",
+            arapca: "بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ",
+            okunus: "Bismillâh, tevekkeltü alâllâh, ve lâ havle ve lâ kuvvete illâ billâh.",
+            meal: "Allah'ın adıyla, Allah'a tevekkül ettim. Güç ve kuvvet ancak Allah'ın yardımıyladır.",
+            fazilet: "Evden çıkarken bunu okuyana “hidayete erdin, kifayet edildin, korundun” denileceği bildirilmiştir. (Ebû Dâvûd, Tirmizî)"
         },
         {
             id: 6,
+            kategori: "ev-yol",
+            baslik: "Eve Giriş Duası",
+            arapca: "اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ الْمَوْلِجِ وَخَيْرَ الْمَخْرَجِ بِسْمِ اللَّهِ وَلَجْنَا وَبِسْمِ اللَّهِ خَرَجْنَا وَعَلَى اللَّهِ رَبِّنَا تَوَكَّلْنَا",
+            okunus: "Allâhümme innî es'elüke hayral-mevlici ve hayral-mahrac. Bismillâhi velecnâ ve bismillâhi haracnâ ve alâllâhi rabbinâ tevekkelnâ.",
+            meal: "Allah'ım! Senden girişin de çıkışın da hayrını isterim. Allah'ın adıyla girdik, Allah'ın adıyla çıktık ve Rabbimiz Allah'a tevekkül ettik.",
+            fazilet: "Eve girerken Allah'ın adı anılırsa şeytanın o evde geceleme ve yemek imkânı bulamayacağı bildirilmiştir. (Müslim, Ebû Dâvûd)"
+        },
+        {
+            id: 7,
+            kategori: "ev-yol",
+            baslik: "Bineğe veya Araca Binme Duası",
+            arapca: "سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ وَإِنَّا إِلَى رَبِّنَا لَمُنْقَلِبُونَ",
+            okunus: "Sübhânellezî sehhara lenâ hâzâ ve mâ kunnâ lehû mukrinîn. Ve innâ ilâ rabbinâ le-munkalibûn.",
+            meal: "Bunu bizim hizmetimize veren Allah'ı tenzih ederiz; yoksa biz buna güç yetiremezdik. Şüphesiz biz Rabbimize döneceğiz.",
+            fazilet: "Zuhruf Suresi 13-14. ayetlerdir; Peygamberimiz (s.a.s.) yolculuğa çıkarken bineğine binince okurdu. (Müslim)"
+        },
+        {
+            id: 8,
+            kategori: "yemek-rizik",
+            baslik: "Yemekten Önce",
+            arapca: "بِسْمِ اللَّهِ",
+            okunus: "Bismillâh.",
+            meal: "Allah'ın adıyla.",
+            fazilet: "Başta okunması unutulursa: “Bismillâhi evvelehû ve âhirehû” (Başında da sonunda da Allah'ın adıyla) denir. (Ebû Dâvûd, Tirmizî)"
+        },
+        {
+            id: 9,
+            kategori: "yemek-rizik",
+            baslik: "Yemek Sonrası Duası",
+            arapca: "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنِي هَذَا وَرَزَقَنِيهِ مِنْ غَيْرِ حَوْلٍ مِنِّي وَلَا قُوَّةٍ",
+            okunus: "Elhamdülillâhillezî et'amenî hâzâ ve razekanîhi min gayri havlin minnî ve lâ kuvve.",
+            meal: "Bana bunu yediren ve benden hiçbir güç ve kuvvet olmaksızın bunu bana rızık kılan Allah'a hamdolsun.",
+            fazilet: "Yemekten sonra bunu söyleyenin geçmiş günahlarının bağışlanacağı bildirilmiştir. (Ebû Dâvûd, Tirmizî)"
+        },
+        {
+            id: 10,
             kategori: "sikinti",
-            baslik: "Sıkıntı ve Keder Anında Okunacak Dua",
-            tag: "Sıkıntı & Dua",
-            arapça: "لَا إِلَهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ",
-            okunus: "Lâ ilâhe illâ ente sübhaneke innî küntü minez-zâlimin.",
-            meal: "Senden başka ilah yoktur, Sen’i tenzih ederim. Şüphesiz ben zalimlerden oldum.",
-            fazilet: "Hz. Yunus'un balığın karnındayken ettiği bu dua, sıkıntıda olanların kurtuluş vesilesidir."
+            baslik: "Sıkıntı ve Keder Anında (Yunus Duası)",
+            arapca: "لَا إِلَهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ",
+            okunus: "Lâ ilâhe illâ ente sübhâneke innî küntü minez-zâlimîn.",
+            meal: "Senden başka ilah yoktur, seni tenzih ederim. Gerçekten ben zalimlerden oldum.",
+            fazilet: "Hz. Yunus'un (a.s.) balığın karnında yaptığı duadır (Enbiyâ, 87). Müslümanın bununla yaptığı duaya Allah'ın karşılık vereceği bildirilmiştir. (Tirmizî)"
+        },
+        {
+            id: 11,
+            kategori: "sikinti",
+            baslik: "Allah Bize Yeter",
+            arapca: "حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ",
+            okunus: "Hasbünallâhü ve ni'mel-vekîl.",
+            meal: "Allah bize yeter, O ne güzel vekildir.",
+            fazilet: "Âl-i İmrân Suresi 173. ayettir; Hz. İbrahim (a.s.) ateşe atıldığında bu sözü söylemiştir. (Buhârî)"
+        },
+        {
+            id: 12,
+            kategori: "sikinti",
+            baslik: "Dünya ve Âhiret İyiliği Duası",
+            arapca: "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ",
+            okunus: "Rabbenâ âtinâ fid-dünyâ haseneten ve fîl-âhirati haseneten ve kınâ azâben-nâr.",
+            meal: "Rabbimiz! Bize dünyada da iyilik ver, âhirette de iyilik ver ve bizi ateşin azabından koru.",
+            fazilet: "Bakara Suresi 201. ayettir; Peygamberimizin (s.a.s.) en çok yaptığı dualardan biridir. (Buhârî, Müslim)"
         }
     ];
 
-    function renderDualar(kategori) {
+    function escapeHtml(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function renderKategoriler() {
+        const box = document.getElementById('category-filters');
+        box.innerHTML = kategoriler.map(k =>
+            `<button class="cat-btn ${k.id === aktifKategori ? 'active' : ''}" onclick="filterCategory('${k.id}')">${t[k.key]}</button>`
+        ).join('');
+    }
+
+    function renderDualar() {
         const container = document.getElementById('dualar-container');
-        let html = '';
+        const q = (document.getElementById('search-input').value || '').trim().toLocaleLowerCase('tr');
 
-        const filtrelenmis = kategori === 'hepsi' 
-            ? dualarVeritabani 
-            : dualarVeritabani.filter(d => d.kategori === kategori);
-
-        filtrelenmis.forEach(dua => {
-            html += `
-                <div class="dua-card">
-                    <div class="dua-header">
-                        <div class="dua-name">${dua.baslik}</div>
-                        <div class="dua-tag">${dua.tag}</div>
-                    </div>
-                    <div class="arabic-text">${dua.arapça}</div>
-                    <div class="pronunciation-text">🔊 Okunuşu: ${dua.okunus}</div>
-                    <div class="translation-text"><strong>Anlamı:</strong> ${dua.meal}</div>
-                    <div class="dua-virtue">✨ <strong>Fazileti / Not:</strong> ${dua.fazilet}</div>
-                </div>
-            `;
+        const filtrelenmis = dualarVeritabani.filter(d => {
+            if (aktifKategori !== 'hepsi' && d.kategori !== aktifKategori) return false;
+            if (!q) return true;
+            return (d.baslik + ' ' + d.okunus + ' ' + d.meal + ' ' + d.fazilet).toLocaleLowerCase('tr').includes(q)
+                || d.arapca.includes(q);
         });
 
-        container.innerHTML = html;
+        if (filtrelenmis.length === 0) {
+            container.innerHTML = `<div class="empty-msg">${t.empty}</div>`;
+            return;
+        }
+
+        container.innerHTML = filtrelenmis.map(dua => `
+            <div class="dua-card">
+                <div class="dua-header">
+                    <div class="dua-name">${escapeHtml(dua.baslik)}</div>
+                    <div class="dua-tag">${t[kategoriKey[dua.kategori]]}</div>
+                </div>
+                <div class="arabic-text" lang="ar">${dua.arapca}</div>
+                <div class="pronunciation-text">🔊 ${t.pron}: ${escapeHtml(dua.okunus)}</div>
+                <div class="translation-text"><strong>${t.meaning}:</strong> ${escapeHtml(dua.meal)}</div>
+                <div class="dua-virtue">✨ <strong>${t.virtue}:</strong> ${escapeHtml(dua.fazilet)}</div>
+                <div class="dua-actions">
+                    <button class="copy-btn" onclick="copyDua(${dua.id}, this)">📋 ${t.copy}</button>
+                </div>
+            </div>
+        `).join('');
     }
 
-    function filterCategory(kategori, btn) {
-        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        renderDualar(kategori);
+    function filterCategory(kategori) {
+        aktifKategori = kategori;
+        renderKategoriler();
+        renderDualar();
     }
 
-    // --- TEMA YÖNETİMİ (Çalışan standart yapıya uyarlandı) ---
+    function copyDua(id, btn) {
+        const d = dualarVeritabani.find(x => x.id === id);
+        if (!d) return;
+        const text = `${d.baslik}\n\n${d.arapca}\n\n${d.okunus}\n\n${d.meal}\n\n— Ayetin Vakti`;
+
+        const done = () => {
+            btn.innerHTML = '✅ ' + t.copied;
+            setTimeout(() => { btn.innerHTML = '📋 ' + t.copy; }, 1800);
+        };
+        const fallback = () => {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); done(); } catch (e) {}
+            document.body.removeChild(ta);
+        };
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(done).catch(fallback);
+        } else {
+            fallback();
+        }
+    }
+
+    // --- TEMA YÖNETİMİ (değiştirilmedi) ---
     function initTheme() {
         const savedTheme = localStorage.getItem('theme') || 'dark';
         applyTheme(savedTheme);
@@ -251,21 +409,18 @@
         const btn = document.getElementById('theme-btn');
         if (theme === 'light') {
             document.documentElement.setAttribute('data-theme', 'light');
-            if (btn) btn.innerHTML = '🌙'; 
+            if (btn) btn.innerHTML = '🌙';
             localStorage.setItem('theme', 'light');
         } else {
             document.documentElement.removeAttribute('data-theme');
-            if (btn) btn.innerHTML = '☀️'; 
+            if (btn) btn.innerHTML = '☀️';
             localStorage.setItem('theme', 'dark');
         }
     }
 
-    // Sayfa Yüklendiğinde Çalışacaklar
     window.onload = () => {
         initTheme();
-        renderDualar('hepsi');
 
-        // Dil etiketlerini yerleştir
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
             if (t[key]) {
@@ -273,6 +428,13 @@
                 else el.innerHTML = t[key];
             }
         });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            if (t[key]) el.placeholder = t[key];
+        });
+
+        renderKategoriler();
+        renderDualar();
     };
 </script>
 </body>
