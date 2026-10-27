@@ -7,39 +7,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title data-i18n="page_title">Günlük Dualar | Ayetin Vakti</title>
-    <meta name="theme-color" content="#10b981">
+    <meta name="theme-color" content="#0f172a">
 
     <script>
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        if (savedTheme === 'light') {
-            document.documentElement.setAttribute('data-theme', 'light');
-        } else {
-            document.documentElement.removeAttribute('data-theme');
-        }
+        // Tema ve özel renk paleti (titremeyi önlemek için en başta çalışır; tema sınıfı yalnızca <html> üzerinde)
+        (function () {
+            const d = document.documentElement;
+            const savedTheme = localStorage.getItem('theme');
+            const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (savedTheme === 'light' || (!savedTheme && !systemPrefersDark)) {
+                d.classList.add('light-mode');
+            }
+            const a = localStorage.getItem('custom_accent');
+            const t = localStorage.getItem('custom_text');
+            const b = localStorage.getItem('custom_bg');
+            if (a) d.style.setProperty('--accent-color', a);
+            if (t) d.style.setProperty('--text-color', t);
+            if (b) {
+                d.style.setProperty('--bg-color', b);
+                d.style.setProperty('--card-bg', b);
+            }
+            // Özel arka plan var, yazı rengi seçilmemişse okunabilir renkleri zeminin açıklığına göre seç
+            if (b && !t) {
+                const m = /^#([0-9a-f]{6})$/i.exec(b.trim());
+                if (m) {
+                    const n = parseInt(m[1], 16);
+                    const lin = c => { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
+                    const L = 0.2126 * lin(n >> 16) + 0.7152 * lin((n >> 8) & 255) + 0.0722 * lin(n & 255);
+                    const bgIsLight = L > 0.18;
+                    d.style.setProperty('--text-color', bgIsLight ? '#0f172a' : '#f8fafc');
+                    d.style.setProperty('--text-muted', bgIsLight ? '#475569' : '#cbd5e1');
+                    d.style.setProperty('--border-color', bgIsLight ? 'rgba(15,23,42,0.18)' : 'rgba(248,250,252,0.22)');
+                }
+            }
+            // Tarayıcı çubuğu rengi sayfa zeminine uysun
+            const metaTC = document.querySelector('meta[name="theme-color"]');
+            if (metaTC) metaTC.setAttribute('content', b || (d.classList.contains('light-mode') ? '#f1f5f9' : '#0f172a'));
 
-        const savedAccent = localStorage.getItem('custom_accent');
-        const savedText = localStorage.getItem('custom_text');
-
-        if (savedAccent) document.documentElement.style.setProperty('--accent-color', savedAccent);
-        if (savedText) document.documentElement.style.setProperty('--text-color', savedText);
-
-        const savedBg = localStorage.getItem('custom_bg');
-        if (savedBg && savedTheme !== 'light') {
-            document.documentElement.style.setProperty('--bg-color', savedBg);
-            document.documentElement.style.setProperty('--card-bg', savedBg);
-        }
-
-        const currentLang = localStorage.getItem('user_lang') || 'tr';
-        if (currentLang === 'ar') {
-            document.documentElement.setAttribute('dir', 'rtl');
-        } else {
-            document.documentElement.setAttribute('dir', 'ltr');
-        }
-        document.documentElement.setAttribute('lang', currentLang);
+            // Dil ve yön (RTL titremesini önlemek için)
+            const lang = localStorage.getItem('user_lang') || 'tr';
+            d.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+            d.setAttribute('lang', lang);
+        })();
     </script>
 
     <style>
         :root {
+            color-scheme: dark;
             --bg-color: #0f172a;
             --card-bg: #1e293b;
             --accent-color: #10b981;
@@ -53,20 +67,24 @@
             --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
-        [data-theme="light"] {
-            --bg-color: #f1f5f9 !important;
-            --card-bg: #ffffff !important;
-            --accent-color: #059669 !important;
-            --accent-hover: #047857 !important;
-            --text-color: #0f172a !important;
-            --text-muted: #64748b !important;
-            --border-color: #cbd5e1 !important;
-            --btn-bg: #f8fafc !important;
-            --btn-hover: #e2e8f0 !important;
-            --shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;
+        html.light-mode {
+            color-scheme: light;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --accent-color: #059669;
+            --accent-hover: #047857;
+            --text-color: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+            --btn-bg: #f8fafc;
+            --btn-hover: #e2e8f0;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        /* Ard arda dokunuşta çift dokunma yakınlaştırmasını kapatır (iki parmakla yakınlaştırma açık kalır) */
+        html, body, button, a, select, input, label, [onclick] { touch-action: manipulation; }
         body { font-family: var(--font-family); background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 16px; transition: background-color 0.3s ease, color 0.3s ease; }
         .container { width: 100%; max-width: 650px; display: flex; flex-direction: column; gap: 16px; }
 
@@ -74,7 +92,7 @@
         [dir="rtl"] .navbar { flex-direction: row-reverse; }
 
         .circle-btn { width: 42px; height: 42px; border-radius: 50%; background: var(--btn-bg); border: 1px solid var(--border-color); color: var(--text-color); display: flex; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; font-size: 1.2rem; transition: 0.2s; }
-        .circle-btn:hover { border-color: var(--accent-color); color: var(--accent-color); background: var(--btn-hover); }
+        @media (hover: hover) { .circle-btn:hover { border-color: var(--accent-color); color: var(--accent-color); background: var(--btn-hover); } }
         .app-title { font-size: 1.1rem; font-weight: 700; color: var(--accent-color); text-align: center; }
 
         .search-box { width: 100%; padding: 12px 16px; border-radius: 14px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color); font-size: 0.92rem; outline: none; box-shadow: var(--shadow); transition: 0.2s; }
@@ -99,7 +117,7 @@
 
         .dua-actions { display: flex; justify-content: flex-end; }
         .copy-btn { padding: 7px 14px; background: var(--btn-bg); border: 1px solid var(--border-color); color: var(--text-color); font-size: 0.8rem; font-weight: 600; border-radius: 10px; cursor: pointer; transition: 0.2s; }
-        .copy-btn:hover { border-color: var(--accent-color); color: var(--accent-color); }
+        @media (hover: hover) { .copy-btn:hover { border-color: var(--accent-color); color: var(--accent-color); } }
 
         .empty-msg { text-align: center; color: var(--text-muted); padding: 30px 10px; font-size: 0.9rem; }
         .source-note { text-align: center; font-size: 0.75rem; color: var(--text-muted); line-height: 1.5; padding: 0 8px; }
@@ -114,7 +132,7 @@
     <header class="navbar">
         <a href="../" class="circle-btn" title="Geri Dön">←</a>
         <div class="app-title" data-i18n="app_title">Günlük Dualar</div>
-        <button class="circle-btn" onclick="toggleTheme()" id="theme-btn" title="Tema Değiştir">☀️</button>
+        <button class="circle-btn" onclick="toggleTheme()" id="theme-btn" title="Tema Değiştir">🌙</button>
     </header>
 
     <input type="search" class="search-box" id="search-input" data-i18n-placeholder="search_ph" placeholder="Dua ara..." oninput="renderDualar()">
@@ -393,33 +411,29 @@
         }
     }
 
-    // --- TEMA YÖNETİMİ (değiştirilmedi) ---
-    function initTheme() {
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        applyTheme(savedTheme);
+    // --- TEMA YÖNETİMİ (standart: tema sınıfı yalnızca <html> üzerinde) ---
+    function syncThemeBtn() {
+        const btn = document.getElementById('theme-btn');
+        if (btn) btn.innerHTML = document.documentElement.classList.contains('light-mode') ? '☀️' : '🌙';
+    }
+
+    // Tarayıcı çubuğu rengini (theme-color) o anki arka plan rengine eşitler
+    function updateThemeColor() {
+        const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg-color').trim();
+        const m = document.querySelector('meta[name="theme-color"]');
+        if (m && bg) m.setAttribute('content', bg);
     }
 
     function toggleTheme() {
-        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-        const newTheme = isLight ? 'dark' : 'light';
-        applyTheme(newTheme);
-    }
-
-    function applyTheme(theme) {
-        const btn = document.getElementById('theme-btn');
-        if (theme === 'light') {
-            document.documentElement.setAttribute('data-theme', 'light');
-            if (btn) btn.innerHTML = '🌙';
-            localStorage.setItem('theme', 'light');
-        } else {
-            document.documentElement.removeAttribute('data-theme');
-            if (btn) btn.innerHTML = '☀️';
-            localStorage.setItem('theme', 'dark');
-        }
+        const isLight = document.documentElement.classList.toggle('light-mode');
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        syncThemeBtn();
+        updateThemeColor();
     }
 
     window.onload = () => {
-        initTheme();
+        syncThemeBtn();
+        updateThemeColor();
 
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
