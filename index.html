@@ -119,6 +119,13 @@
         .copy-btn { padding: 7px 14px; background: var(--btn-bg); border: 1px solid var(--border-color); color: var(--text-color); font-size: 0.8rem; font-weight: 600; border-radius: 10px; cursor: pointer; transition: 0.2s; }
         @media (hover: hover) { .copy-btn:hover { border-color: var(--accent-color); color: var(--accent-color); } }
 
+        .tools-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+        .tools-row .hafiz-count { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
+        .dua-actions { gap: 8px; flex-wrap: wrap; }
+        .dua-actions .copy-btn.on { border-color: var(--accent-color); color: var(--accent-color); }
+        .dua-card[data-ez="1"] .ezb-p, .dua-card[data-ez="2"] .ezb-p, .dua-card[data-ez="2"] .ezb-a { filter: blur(7px); cursor: pointer; user-select: none; }
+        .dua-card .shown { filter: none !important; }
+        .mini-note { font-size: 0.72rem; color: var(--text-muted); }
         .empty-msg { text-align: center; color: var(--text-muted); padding: 30px 10px; font-size: 0.9rem; }
         .source-note { text-align: center; font-size: 0.75rem; color: var(--text-muted); line-height: 1.5; padding: 0 8px; }
 
@@ -139,8 +146,11 @@
 
     <div class="categories-container" id="category-filters"></div>
 
+    <div class="tools-row"><button class="cat-btn" id="rep-btn" onclick="toggleRepeat()"></button><span class="hafiz-count" id="hafiz-count"></span></div>
+
     <div class="dualar-list" id="dualar-container"></div>
 
+    <div class="source-note" id="tts-note"></div>
     <div class="source-note" data-i18n="source_note">Dualar hadis-i şerif ve ayet-i kerimelerden derlenmiştir; fazilet bilgileri özet olarak verilmiştir.</div>
 </div>
 
@@ -161,6 +171,14 @@
             cat_yemek: "Yemek & Rızık",
             cat_sikinti: "Sıkıntı & Dua",
             cat_uyku: "Uyku & Uyanış",
+            cat_ibadet: "İbadet & Temizlik",
+            cat_ezber: "Ezberlediklerim",
+            listen: "Dinle", stop: "Durdur", audio_fail: "Ses çalınamadı",
+            ezber: "Ezber", ezber1: "Okunuş gizli", ezber2: "Hepsi gizli",
+            hafiz: "Ezberledim", hafiz_done: "Ezberlendi ✓", hafiz_count: "Ezberlenen",
+            repeat_on: "🔁 Tekrarlı dinle: 3×", repeat_off: "🔁 Tekrarlı dinle: kapalı",
+            partial_note: "Ses ayetin tamamını okur; yukarıdaki metin ayetten bir bölümdür.",
+            tts_note: "Ayet olmayan dualarda cihazın Arapça sesi kullanılır (makine okuması, yaklaşık); Hafız tilaveti sadece ayetlerde vardır. Gizli metne dokunarak görebilirsiniz.",
             pron: "Okunuşu",
             meaning: "Anlamı",
             virtue: "Fazileti / Not",
@@ -180,6 +198,14 @@
             cat_yemek: "Food & Provision",
             cat_sikinti: "Hardship & Dua",
             cat_uyku: "Sleep & Waking",
+            cat_ibadet: "Worship & Purity",
+            cat_ezber: "Memorized",
+            listen: "Listen", stop: "Stop", audio_fail: "Audio failed",
+            ezber: "Memorize", ezber1: "Hide transliteration", ezber2: "Hide all",
+            hafiz: "I memorized it", hafiz_done: "Memorized ✓", hafiz_count: "Memorized",
+            repeat_on: "🔁 Repeat listening: 3×", repeat_off: "🔁 Repeat listening: off",
+            partial_note: "The recitation covers the whole verse; the text above is a part of it.",
+            tts_note: "Non-Qur'anic prayers use your device's Arabic voice (machine reading, approximate); reciter audio exists only for verses. Tap hidden text to reveal it.",
             pron: "Pronunciation",
             meaning: "Meaning",
             virtue: "Virtue / Note",
@@ -199,6 +225,14 @@
             cat_yemek: "الطعام والرزق",
             cat_sikinti: "الشدائد والدعاء",
             cat_uyku: "النوم والاستيقاظ",
+            cat_ibadet: "العبادة والطهارة",
+            cat_ezber: "محفوظاتي",
+            listen: "استمع", stop: "إيقاف", audio_fail: "تعذّر تشغيل الصوت",
+            ezber: "حفظ", ezber1: "إخفاء النطق", ezber2: "إخفاء الكل",
+            hafiz: "حفظتُه", hafiz_done: "محفوظ ✓", hafiz_count: "المحفوظ",
+            repeat_on: "🔁 تكرار الاستماع: ×3", repeat_off: "🔁 تكرار الاستماع: متوقف",
+            partial_note: "التلاوة تشمل الآية كاملة، والنص أعلاه جزء منها.",
+            tts_note: "الأدعية غير القرآنية تُقرأ بصوت الجهاز العربي (آلي وتقريبي)؛ تلاوة القارئ للآيات فقط. المس النص المخفي لإظهاره.",
             pron: "النطق",
             meaning: "المعنى",
             virtue: "الفضل / ملاحظة",
@@ -217,7 +251,9 @@
         { id: 'uyku', key: 'cat_uyku' },
         { id: 'ev-yol', key: 'cat_evyol' },
         { id: 'yemek-rizik', key: 'cat_yemek' },
-        { id: 'sikinti', key: 'cat_sikinti' }
+        { id: 'ibadet', key: 'cat_ibadet' },
+        { id: 'sikinti', key: 'cat_sikinti' },
+        { id: 'ezber', key: 'cat_ezber' }
     ];
     const kategoriKey = Object.fromEntries(kategoriler.map(k => [k.id, k.key]));
     let aktifKategori = 'hepsi';
@@ -280,6 +316,7 @@
         },
         {
             id: 7,
+            sura: 43, ayah: 13, ayahEnd: 14, partial: true,
             kategori: "ev-yol",
             baslik: "Bineğe veya Araca Binme Duası",
             arapca: "سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ وَإِنَّا إِلَى رَبِّنَا لَمُنْقَلِبُونَ",
@@ -307,6 +344,7 @@
         },
         {
             id: 10,
+            sura: 21, ayah: 87, partial: true,
             kategori: "sikinti",
             baslik: "Sıkıntı ve Keder Anında (Yunus Duası)",
             arapca: "لَا إِلَهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ",
@@ -316,6 +354,7 @@
         },
         {
             id: 11,
+            sura: 3, ayah: 173, partial: true,
             kategori: "sikinti",
             baslik: "Allah Bize Yeter",
             arapca: "حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ",
@@ -325,12 +364,143 @@
         },
         {
             id: 12,
+            sura: 2, ayah: 201,
             kategori: "sikinti",
             baslik: "Dünya ve Âhiret İyiliği Duası",
             arapca: "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ",
             okunus: "Rabbenâ âtinâ fid-dünyâ haseneten ve fîl-âhirati haseneten ve kınâ azâben-nâr.",
             meal: "Rabbimiz! Bize dünyada da iyilik ver, âhirette de iyilik ver ve bizi ateşin azabından koru.",
             fazilet: "Bakara Suresi 201. ayettir; Peygamberimizin (s.a.s.) en çok yaptığı dualardan biridir. (Buhârî, Müslim)"
+        },
+        {
+            id: 13,
+            sura: 2, ayah: 255,
+            kategori: "sabah-aksam",
+            baslik: "Ayetü'l-Kürsî",
+            arapca: "اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ",
+            okunus: "Allâhü lâ ilâhe illâ hüvel hayyül kayyûm, lâ te'huzühû sinetün ve lâ nevm, lehû mâ fis-semâvâti ve mâ fîl-ard, men zellezî yeşfeu indehû illâ bi-iznih, ya'lemü mâ beyne eydîhim ve mâ halfehüm, ve lâ yühîtûne bi-şey'in min ilmihî illâ bi-mâ şâ', vesia kürsiyyühüs-semâvâti vel-ard, ve lâ yeûdühû hıfzuhümâ, ve hüvel aliyyül azîm.",
+            meal: "Allah, kendisinden başka ilah olmayandır; diridir, her şeyin varlığı O'na bağlıdır. O'nu ne uyuklama tutar ne uyku. Göklerde ve yerde ne varsa O'nundur. İzni olmadan katında kim şefaat edebilir? O, kulların önlerindekini ve arkalarındakini bilir. Onlar O'nun ilminden, dilediği kadarından başka bir şey kavrayamazlar. O'nun kürsüsü gökleri ve yeri kuşatmıştır; onları korumak O'na ağır gelmez. O, yücedir, büyüktür.",
+            fazilet: "Bakara Suresi 255. ayettir. Her farz namazdan sonra okuyanı cennete girmekten ölümden başka bir şeyin engellemeyeceği bildirilmiştir (Nesâî, Amelü'l-yevm ve'l-leyle). Yatmadan önce okuyan için sabaha kadar Allah'tan bir koruyucu bulunur (Buhârî, Vekâle)."
+        },
+        {
+            id: 14,
+            sura: 112, ayah: 1, ayahEnd: 4,
+            kategori: "sabah-aksam",
+            baslik: "İhlâs Suresi",
+            arapca: "قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ",
+            okunus: "Kul hüvallâhü ehad. Allâhüs-samed. Lem yelid ve lem yûled. Ve lem yekün lehû küfüven ehad.",
+            meal: "De ki: O, Allah'tır, bir tektir. Allah sameddir (her şey O'na muhtaçtır, O hiçbir şeye muhtaç değildir). O doğurmamış ve doğurulmamıştır. Hiçbir şey O'na denk değildir.",
+            fazilet: "İhlâs, Felak ve Nâs surelerini sabah ve akşam üçer defa okuyana her şeye karşı yeteceği bildirilmiştir. (Ebû Dâvûd, Edeb; Tirmizî, Deavât)"
+        },
+        {
+            id: 15,
+            sura: 113, ayah: 1, ayahEnd: 5,
+            kategori: "sabah-aksam",
+            baslik: "Felak Suresi",
+            arapca: "قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ مِنْ شَرِّ مَا خَلَقَ ۝ وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ ۝ وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ۝ وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ",
+            okunus: "Kul eûzü bi-rabbil-felak. Min şerri mâ halak. Ve min şerri gâsikın izâ vekab. Ve min şerrin-neffâsâti fîl-ukad. Ve min şerri hâsidin izâ hased.",
+            meal: "De ki: Ağaran sabahın Rabbine sığınırım; yarattığı şeylerin şerrinden, karanlığı çöktüğünde gecenin şerrinden, düğümlere üfleyenlerin şerrinden ve haset ettiğinde hasetçinin şerrinden.",
+            fazilet: "Sabah ve akşam üçer defa okunması tavsiye edilir. (Ebû Dâvûd, Edeb; Tirmizî, Deavât)"
+        },
+        {
+            id: 16,
+            sura: 114, ayah: 1, ayahEnd: 6,
+            kategori: "sabah-aksam",
+            baslik: "Nâs Suresi",
+            arapca: "قُلْ أَعُوذُ بِرَبِّ النَّاسِ ۝ مَلِكِ النَّاسِ ۝ إِلَهِ النَّاسِ ۝ مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ۝ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ ۝ مِنَ الْجِنَّةِ وَالنَّاسِ",
+            okunus: "Kul eûzü bi-rabbin-nâs. Melikin-nâs. İlâhin-nâs. Min şerril-vesvâsil-hannâs. Ellezî yüvesvisü fî sudûrin-nâs. Minel-cinneti ven-nâs.",
+            meal: "De ki: İnsanların Rabbine, insanların hükümdarına, insanların ilahına sığınırım; sinsi vesvesecinin şerrinden. O ki insanların göğüslerine vesvese verir; cinlerden de insanlardan da.",
+            fazilet: "Sabah ve akşam üçer defa okunması tavsiye edilir. Yatmadan önce İhlâs, Felak ve Nâs okunarak avuçlara üflenip bedene sürülürdü. (Buhârî, Fezâilü'l-Kur'ân)"
+        },
+        {
+            id: 17,
+            kategori: "sabah-aksam",
+            baslik: "Sabaha Erince Okunacak Dua",
+            arapca: "اللَّهُمَّ بِكَ أَصْبَحْنَا وَبِكَ أَمْسَيْنَا وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ النُّشُورُ",
+            okunus: "Allâhümme bike asbahnâ ve bike emseynâ ve bike nahyâ ve bike nemûtü ve ileyken-nüşûr.",
+            meal: "Allah'ım! Seninle sabaha erdik, seninle akşama erdik, seninle yaşar, seninle ölürüz; dirilip dönüş sanadır.",
+            fazilet: "Peygamberimiz sabaha erdiğinde bu duayı okurdu. Akşamları “Allâhümme bike emseynâ ve bike asbahnâ ve bike nahyâ ve bike nemûtü ve ileykel-masîr” derdi. (Tirmizî, Deavât; Ebû Dâvûd, Edeb)"
+        },
+        {
+            id: 18,
+            kategori: "ibadet",
+            baslik: "Abdest Sonrası Duası",
+            arapca: "أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ",
+            okunus: "Eşhedü en lâ ilâhe illallâhü vahdehû lâ şerîke leh, ve eşhedü enne Muhammeden abdühû ve resûlüh.",
+            meal: "Şahitlik ederim ki Allah'tan başka ilah yoktur; O tektir, ortağı yoktur. Yine şahitlik ederim ki Muhammed O'nun kulu ve elçisidir.",
+            fazilet: "Güzelce abdest alıp bu duayı okuyana cennetin sekiz kapısının açılacağı, dilediğinden gireceği bildirilmiştir. (Müslim, Tahâret)"
+        },
+        {
+            id: 19,
+            kategori: "ibadet",
+            baslik: "Ezandan Sonra Okunacak Dua",
+            arapca: "اللَّهُمَّ رَبَّ هَذِهِ الدَّعْوَةِ التَّامَّةِ وَالصَّلَاةِ الْقَائِمَةِ آتِ مُحَمَّدًا الْوَسِيلَةَ وَالْفَضِيلَةَ وَابْعَثْهُ مَقَامًا مَحْمُودًا الَّذِي وَعَدْتَهُ",
+            okunus: "Allâhümme Rabbe hâzihid-da'vetit-tâmmeti vessalâtil-kâimeti, âti Muhammedenil-vesîlete vel-fadîlete, veb'ashü makâmen mahmûdenillezî ve'adtehû.",
+            meal: "Ey bu eksiksiz çağrının ve kılınacak namazın Rabbi Allah'ım! Muhammed'e vesîle ve fazîleti ver ve onu va'dettiğin makâm-ı mahmûda ulaştır.",
+            fazilet: "Ezanı işittikten sonra bu duayı okuyanın, kıyamet günü Peygamberimizin şefaatine nail olacağı bildirilmiştir. (Buhârî, Ezân)"
+        },
+        {
+            id: 20,
+            kategori: "ibadet",
+            baslik: "Mescide Girerken",
+            arapca: "اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ",
+            okunus: "Allâhümmeftah lî ebvâbe rahmetik.",
+            meal: "Allah'ım! Bana rahmet kapılarını aç.",
+            fazilet: "Mescide girerken okunan duadır. (Müslim, Müsâfirîn)"
+        },
+        {
+            id: 21,
+            kategori: "ibadet",
+            baslik: "Mescitten Çıkarken",
+            arapca: "اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ",
+            okunus: "Allâhümme innî es'elüke min fadlik.",
+            meal: "Allah'ım! Senden lütfunu isterim.",
+            fazilet: "Mescitten çıkarken okunan duadır. (Müslim, Müsâfirîn)"
+        },
+        {
+            id: 22,
+            kategori: "ibadet",
+            baslik: "Tuvalete Girerken",
+            arapca: "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْخُبُثِ وَالْخَبَائِثِ",
+            okunus: "Allâhümme innî eûzü bike minel-hubüsi vel-habâis.",
+            meal: "Allah'ım! Erkek ve dişi şeytanların (her türlü pislik ve kötülüğün) şerrinden sana sığınırım.",
+            fazilet: "Tuvalete girerken okunur. Çıkarken “Gufrâneke” (Senden bağışlanma dilerim) denir. (Buhârî, Vudû; Tirmizî, Tahâret)"
+        },
+        {
+            id: 23,
+            kategori: "sikinti",
+            baslik: "Lâ Havle Ve Lâ Kuvvete İllâ Billâh",
+            arapca: "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ",
+            okunus: "Lâ havle ve lâ kuvvete illâ billâh.",
+            meal: "Güç ve kuvvet ancak Allah'tandır.",
+            fazilet: "Peygamberimiz bu sözün cennet hazinelerinden bir hazine olduğunu bildirmiştir. (Buhârî, Deavât; Müslim, Zikir)"
+        },
+        {
+            id: 24,
+            kategori: "sikinti",
+            baslik: "Keder ve Borç Sıkıntısında",
+            arapca: "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ وَالْعَجْزِ وَالْكَسَلِ وَالْبُخْلِ وَالْجُبْنِ وَضَلَعِ الدَّيْنِ وَغَلَبَةِ الرِّجَالِ",
+            okunus: "Allâhümme innî eûzü bike minel-hemmi vel-hazen, vel-aczi vel-keseli, vel-buhli vel-cübni, ve dalaid-deyni ve galebetir-ricâl.",
+            meal: "Allah'ım! Kederden ve hüzünden, acizlikten ve tembellikten, cimrilikten ve korkaklıktan, borç yükünden ve insanların baskısından sana sığınırım.",
+            fazilet: "Peygamberimizin sık sık okuduğu dualardandır. (Buhârî, Deavât)"
+        },
+        {
+            id: 25,
+            kategori: "sikinti",
+            baslik: "Hasta İçin Şifa Duası",
+            arapca: "اللَّهُمَّ رَبَّ النَّاسِ أَذْهِبِ الْبَأْسَ اشْفِ أَنْتَ الشَّافِي لَا شِفَاءَ إِلَّا شِفَاؤُكَ شِفَاءً لَا يُغَادِرُ سَقَمًا",
+            okunus: "Allâhümme Rabben-nâs, ezhibil-be's, işfi entesh-Şâfî, lâ şifâe illâ şifâüke, şifâen lâ yügâdirü sakamâ.",
+            meal: "İnsanların Rabbi Allah'ım! Sıkıntıyı gider, şifa ver. Şifa veren ancak sensin. Senin şifandan başka şifa yoktur; hastalığı hiç bırakmayan bir şifa ver.",
+            fazilet: "Peygamberimiz hastaya bu duayı okurdu. (Buhârî, Merdâ; Müslim, Selâm)"
+        },
+        {
+            id: 26,
+            kategori: "yemek-rizik",
+            baslik: "Orucu Açarken",
+            arapca: "ذَهَبَ الظَّمَأُ وَابْتَلَّتِ الْعُرُوقُ وَثَبَتَ الْأَجْرُ إِنْ شَاءَ اللَّهُ",
+            okunus: "Zehebez-zamedü vebtellethil-urûku ve sebetel-ecru inşâallâh.",
+            meal: "Susuzluk gitti, damarlar ıslandı ve inşallah sevap kesinleşti.",
+            fazilet: "Peygamberimiz iftar ettiğinde bu duayı okurdu. (Ebû Dâvûd, Savm)"
         }
     ];
 
@@ -345,12 +515,35 @@
         ).join('');
     }
 
+    let hafiz = [];
+    try { hafiz = JSON.parse(localStorage.getItem('dua_hafiz')) || []; } catch (e) {}
+    let repeatOn = localStorage.getItem('dua_repeat') !== '0';
+    let cur = null;
+    const ezberLvl = {};
+
+    function updateTools() {
+        document.getElementById('rep-btn').innerText = repeatOn ? t.repeat_on : t.repeat_off;
+        document.getElementById('hafiz-count').innerText = `${t.hafiz_count}: ${hafiz.length}/${dualarVeritabani.length}`;
+        document.getElementById('tts-note').innerText = t.tts_note;
+    }
+    function toggleRepeat() {
+        repeatOn = !repeatOn;
+        try { localStorage.setItem('dua_repeat', repeatOn ? '1' : '0'); } catch (e) {}
+        updateTools();
+    }
+
+    function phrases(txt) { return escapeHtml(txt).replace(/([,.;])\s+/g, '$1<br>'); }
+
     function renderDualar() {
+        stopAll();
+        updateTools();
+        if ('speechSynthesis' in window) speechSynthesis.getVoices();
         const container = document.getElementById('dualar-container');
         const q = (document.getElementById('search-input').value || '').trim().toLocaleLowerCase('tr');
 
         const filtrelenmis = dualarVeritabani.filter(d => {
-            if (aktifKategori !== 'hepsi' && d.kategori !== aktifKategori) return false;
+            if (aktifKategori === 'ezber') { if (!hafiz.includes(d.id)) return false; }
+            else if (aktifKategori !== 'hepsi' && d.kategori !== aktifKategori) return false;
             if (!q) return true;
             return (d.baslik + ' ' + d.okunus + ' ' + d.meal + ' ' + d.fazilet).toLocaleLowerCase('tr').includes(q)
                 || d.arapca.includes(q);
@@ -362,20 +555,99 @@
         }
 
         container.innerHTML = filtrelenmis.map(dua => `
-            <div class="dua-card">
+            <div class="dua-card" id="dua-${dua.id}" data-ez="${ezberLvl[dua.id] || 0}">
                 <div class="dua-header">
                     <div class="dua-name">${escapeHtml(dua.baslik)}</div>
                     <div class="dua-tag">${t[kategoriKey[dua.kategori]]}</div>
                 </div>
-                <div class="arabic-text" lang="ar">${dua.arapca}</div>
-                <div class="pronunciation-text">🔊 ${t.pron}: ${escapeHtml(dua.okunus)}</div>
+                <div class="arabic-text ezb-a" lang="ar" onclick="this.classList.toggle('shown')">${dua.arapca}</div>
+                <div class="pronunciation-text ezb-p" onclick="this.classList.toggle('shown')">🔊 ${t.pron}: ${phrases(dua.okunus)}</div>
                 <div class="translation-text"><strong>${t.meaning}:</strong> ${escapeHtml(dua.meal)}</div>
                 <div class="dua-virtue">✨ <strong>${t.virtue}:</strong> ${escapeHtml(dua.fazilet)}</div>
+                ${dua.partial ? `<div class="mini-note">ℹ️ ${t.partial_note}</div>` : ''}
                 <div class="dua-actions">
+                    <button class="copy-btn play-btn" onclick="playDua(${dua.id}, this)">🔊 ${t.listen}</button>
+                    <button class="copy-btn" onclick="cycleEzber(${dua.id}, this)">🧠 ${[t.ezber, t.ezber1, t.ezber2][ezberLvl[dua.id] || 0]}</button>
+                    <button class="copy-btn ${hafiz.includes(dua.id) ? 'on' : ''}" onclick="toggleHafiz(${dua.id}, this)">${hafiz.includes(dua.id) ? '✅ ' + t.hafiz_done : '☐ ' + t.hafiz}</button>
                     <button class="copy-btn" onclick="copyDua(${dua.id}, this)">📋 ${t.copy}</button>
                 </div>
             </div>
         `).join('');
+    }
+
+    function cycleEzber(id, btn) {
+        const lvl = ((ezberLvl[id] || 0) + 1) % 3;
+        ezberLvl[id] = lvl;
+        const card = document.getElementById('dua-' + id);
+        card.dataset.ez = lvl;
+        card.querySelectorAll('.shown').forEach(e => e.classList.remove('shown'));
+        btn.innerText = '🧠 ' + [t.ezber, t.ezber1, t.ezber2][lvl];
+    }
+
+    function toggleHafiz(id, btn) {
+        const i = hafiz.indexOf(id);
+        if (i > -1) hafiz.splice(i, 1); else hafiz.push(id);
+        try { localStorage.setItem('dua_hafiz', JSON.stringify(hafiz)); } catch (e) {}
+        if (aktifKategori === 'ezber') { renderDualar(); return; }
+        btn.classList.toggle('on', hafiz.includes(id));
+        btn.innerText = hafiz.includes(id) ? '✅ ' + t.hafiz_done : '☐ ' + t.hafiz;
+        updateTools();
+    }
+
+    function stopAll() {
+        if (cur) { cur.stopped = true; if (cur.audio) { cur.audio.pause(); cur.audio.src = ''; } cur = null; }
+        if ('speechSynthesis' in window) speechSynthesis.cancel();
+        document.querySelectorAll('.play-btn').forEach(b => { b.innerText = '🔊 ' + t.listen; });
+    }
+
+    function playDua(id, btn) {
+        if (cur && cur.id === id) { stopAll(); return; }
+        stopAll();
+        const d = dualarVeritabani.find(x => x.id === id);
+        if (!d) return;
+        const ctl = { id, stopped: false, audio: null };
+        cur = ctl;
+        let rounds = repeatOn ? 3 : 1;
+        btn.innerText = '⏹ ' + t.stop;
+
+        const fail = () => {
+            if (ctl.stopped) return;
+            stopAll();
+            btn.innerText = '⚠️ ' + t.audio_fail;
+            setTimeout(() => { btn.innerText = '🔊 ' + t.listen; }, 2200);
+        };
+        const done = () => {
+            if (ctl.stopped) return;
+            if (--rounds > 0) setTimeout(() => { if (!ctl.stopped) round(); }, 1500);
+            else stopAll();
+        };
+        const round = () => {
+            if (d.sura) {
+                const urls = [];
+                for (let a = d.ayah; a <= (d.ayahEnd || d.ayah); a++) {
+                    urls.push(`https://everyayah.com/data/Alafasy_128kbps/${String(d.sura).padStart(3, '0')}${String(a).padStart(3, '0')}.mp3`);
+                }
+                let i = 0;
+                const next = () => {
+                    const au = new Audio(urls[i]);
+                    ctl.audio = au;
+                    au.onerror = fail;
+                    au.onended = () => { if (ctl.stopped) return; if (++i < urls.length) next(); else done(); };
+                    au.play().catch(fail);
+                };
+                next();
+            } else {
+                if (!('speechSynthesis' in window)) return fail();
+                const v = speechSynthesis.getVoices().find(x => x.lang && x.lang.toLowerCase().startsWith('ar'));
+                if (!v) return fail();
+                const u = new SpeechSynthesisUtterance(d.arapca);
+                u.voice = v; u.lang = v.lang; u.rate = 0.7;
+                u.onend = done;
+                u.onerror = e => { if (e.error !== 'canceled' && e.error !== 'interrupted') fail(); };
+                speechSynthesis.speak(u);
+            }
+        };
+        round();
     }
 
     function filterCategory(kategori) {
