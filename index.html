@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+    <script src="https://ayetinvakti.github.io/finish.js?v=5"></script>
     <script src="https://ayetinvakti.github.io/menu.js" defer></script>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -138,12 +139,12 @@
 <body>
 
 <div class="container">
-    <header class="navbar">
+    <header class="navbar fin-card">
         <div class="nav-group">
-            <a href="https://ayetinvakti.github.io/" class="circle-btn" title="Geri Dön" aria-label="Geri Dön">←</a>
-            <button class="circle-btn" data-drawer-toggle aria-label="Menü" aria-controls="avmDrawer" title="Menü">☰</button>
+            <a href="https://ayetinvakti.github.io/" class="circle-btn fin-btn" title="Geri Dön" aria-label="Geri Dön">←</a>
+            <button class="circle-btn fin-btn" data-drawer-toggle aria-label="Menü" aria-controls="avmDrawer" title="Menü">☰</button>
         </div>
-        <button class="circle-btn" onclick="toggleTheme()" id="theme-btn" title="Tema Değiştir">🌙</button>
+        <button class="circle-btn fin-btn" onclick="toggleTheme()" id="theme-btn" title="Tema Değiştir">🌙</button>
     </header>
     <h1 class="app-title" data-i18n="app_title">Günlük Dualar</h1>
 
@@ -151,7 +152,7 @@
 
     <div class="categories-container" id="category-filters"></div>
 
-    <div class="tools-row"><button class="cat-btn" id="rep-btn" onclick="toggleRepeat()"></button><span class="hafiz-count" id="hafiz-count"></span></div>
+    <div class="tools-row"><button class="cat-btn fin-btn" id="rep-btn" onclick="toggleRepeat()"></button><span class="hafiz-count" id="hafiz-count"></span></div>
 
     <div class="dualar-list" id="dualar-container"></div>
 
@@ -516,7 +517,7 @@
     function renderKategoriler() {
         const box = document.getElementById('category-filters');
         box.innerHTML = kategoriler.map(k =>
-            `<button class="cat-btn ${k.id === aktifKategori ? 'active' : ''}" onclick="filterCategory('${k.id}')">${t[k.key]}</button>`
+            `<button class="cat-btn fin-btn ${k.id === aktifKategori ? 'active' : ''}" onclick="filterCategory('${k.id}')">${t[k.key]}</button>`
         ).join('');
     }
 
@@ -560,7 +561,7 @@
         }
 
         container.innerHTML = filtrelenmis.map(dua => `
-            <div class="dua-card" id="dua-${dua.id}" data-ez="${ezberLvl[dua.id] || 0}">
+            <div class="dua-card fin-card" id="dua-${dua.id}" data-ez="${ezberLvl[dua.id] || 0}">
                 <div class="dua-header">
                     <div class="dua-name">${escapeHtml(dua.baslik)}</div>
                     <div class="dua-tag">${t[kategoriKey[dua.kategori]]}</div>
